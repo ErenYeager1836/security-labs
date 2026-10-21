@@ -1,0 +1,23 @@
+Oct 21 04:12:01 web-server sshd[14201]: Failed password for invalid user admin from 198.51.100.44 port 41232 ssh2
+Oct 21 04:12:04 web-server sshd[14205]: Failed password for invalid user admin from 198.51.100.44 port 41234 ssh2
+Oct 21 04:12:07 web-server sshd[14210]: Failed password for root from 198.51.100.44 port 41238 ssh2
+Oct 21 04:12:10 web-server sshd[14215]: Failed password for root from 198.51.100.44 port 41242 ssh2
+Oct 21 04:12:14 web-server sshd[14220]: Failed password for invalid user test from 198.51.100.44 port 41246 ssh2
+Oct 21 04:12:17 web-server sshd[14225]: Failed password for invalid user ubuntu from 198.51.100.44 port 41250 ssh2
+Oct 21 04:12:20 web-server sshd[14230]: Failed password for invalid user oracle from 198.51.100.44 port 41254 ssh2
+Oct 21 04:12:23 web-server sshd[14235]: Failed password for invalid user deploy from 198.51.100.44 port 41258 ssh2
+Oct 21 04:12:26 web-server sshd[14240]: Failed password for invalid user postgres from 198.51.100.44 port 41262 ssh2
+Oct 21 04:12:30 web-server sshd[14245]: Failed password for root from 198.51.100.44 port 41266 ssh2
+Oct 21 04:12:34 web-server sshd[14250]: Failed password for invalid user guest from 198.51.100.44 port 41270 ssh2
+Oct 21 04:12:38 web-server sshd[14255]: Failed password for root from 198.51.100.44 port 41274 ssh2
+Oct 21 05:01:12 web-server sshd[15011]: Invalid user support from 203.0.113.89
+Oct 21 05:01:12 web-server sshd[15011]: Failed password for invalid user support from 203.0.113.89 port 53102 ssh2
+Oct 21 05:01:15 web-server sshd[15016]: Invalid user git from 203.0.113.89
+Oct 21 05:01:15 web-server sshd[15016]: Failed password for invalid user git from 203.0.113.89 port 53106 ssh2
+Oct 21 05:01:19 web-server sshd[15021]: Invalid user ansible from 203.0.113.89
+Oct 21 05:01:19 web-server sshd[15021]: Failed password for invalid user ansible from 203.0.113.89 port 53110 ssh2
+Oct 21 05:01:23 web-server sshd[15026]: Failed password for invalid user dev from 203.0.113.89 port 53114 ssh2
+Oct 21 05:01:27 web-server sshd[15031]: Failed password for invalid user monitoring from 203.0.113.89 port 53118 ssh2
+Oct 21 05:01:31 web-server sshd[15036]: Failed password for root from 203.0.113.89 port 53122 ssh2
+Oct 21 06:15:00 web-server sshd[16110]: Accepted publickey for sec_admin from 192.168.1.50 port 55410 ssh2: RSA SHA256:d8a2bc4e7...
+Oct 21 06:15:02 web-server sshd[16110]: pam_unix(sshd:session): session opened for user sec_admin by (uid=0)
