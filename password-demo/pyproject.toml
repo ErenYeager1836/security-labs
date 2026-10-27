@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "password-demo"
+version = "0.1.0"
+description = "Educational comparison of MD5 vs bcrypt vs Argon2 hashing speeds, work factors, and salt security"
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [
+    { name = "Nithishvelan M", email = "erenyeager1836@users.noreply.github.com" }
+]
+keywords = ["security", "passwords", "argon2", "bcrypt", "md5", "cryptography", "salting"]
+dependencies = [
+    "bcrypt>=4.0.0",
+    "argon2-cffi>=23.1.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+]
+
+[project.scripts]
+password-demo = "password_demo.cli:main"
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
