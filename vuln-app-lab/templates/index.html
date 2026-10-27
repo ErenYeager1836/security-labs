@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>security-labs // vuln-app-lab</title>
+    <style>
+        :root {
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-card: #334155;
+            --text-primary: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent: #38bdf8;
+            --danger: #ef4444;
+            --success: #10b981;
+            --border: #475569;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.5;
+            padding: 24px;
+        }
+        .container { max-width: 1000px; margin: 0 auto; }
+        header { margin-bottom: 24px; border-bottom: 1px solid var(--border); padding-bottom: 16px; }
+        h1 { font-size: 1.8rem; color: var(--accent); }
+        .tagline { color: var(--text-muted); font-size: 0.95rem; margin-top: 4px; }
+        .warning-banner {
+            background-color: rgba(239, 68, 68, 0.15);
+            border-left: 4px solid var(--danger);
+            padding: 12px 16px;
+            margin-bottom: 24px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+        .nav-tabs { display: flex; gap: 8px; margin-bottom: 20px; border-bottom: 1px solid var(--border); }
+        .tab-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            padding: 10px 16px;
+            font-size: 1rem;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            font-weight: 500;
+        }
+        .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+        .tab-content { display: none; background: var(--bg-secondary); border-radius: 8px; padding: 24px; border: 1px solid var(--border); }
+        .tab-content.active { display: block; }
+        h2 { font-size: 1.3rem; margin-bottom: 12px; }
+        p { color: var(--text-muted); margin-bottom: 16px; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+        .box { background: var(--bg-primary); padding: 16px; border-radius: 6px; border: 1px solid var(--border); }
+        .box h3 { font-size: 1rem; margin-bottom: 8px; }
+        .box-vuln h3 { color: var(--danger); }
+        .box-fixed h3 { color: var(--success); }
+        code { font-family: monospace; background: rgba(0,0,0,0.3); padding: 2px 6px; border-radius: 3px; font-size: 0.9rem; }
+        pre { background: rgba(0,0,0,0.4); padding: 12px; border-radius: 4px; overflow-x: auto; font-size: 0.85rem; margin-top: 8px; }
+        .test-form { margin-top: 16px; display: flex; gap: 8px; flex-wrap: wrap; }
+        input[type="text"] {
+            flex: 1;
+            min-width: 200px;
+            padding: 8px 12px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            color: var(--text-primary);
+        }
+        button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        .btn-vuln { background: var(--danger); color: white; }
+        .btn-fixed { background: var(--success); color: white; }
+        .btn-quick { background: var(--bg-card); color: var(--text-primary); font-size: 0.8rem; padding: 4px 8px; margin-top: 4px; }
+        .output-box { margin-top: 16px; background: #000; border: 1px solid var(--border); border-radius: 4px; padding: 12px; font-family: monospace; font-size: 0.85rem; min-height: 80px; max-height: 250px; overflow-y: auto; white-space: pre-wrap; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>security-labs // vuln-app-lab</h1>
+            <p class="tagline">Localhost Educational Vulnerability & Remediation Laboratory (OWASP Top 10)</p>
+        </header>
+
+        <div class="warning-banner">
+            <b>Safety Notice:</b> This laboratory operates strictly on localhost (127.0.0.1) and is intended for educational security analysis only.
+        </div>
+
+        <div class="nav-tabs">
+            <button class="tab-btn active" onclick="switchTab('sqli')">1. SQL Injection</button>
+            <button class="tab-btn" onclick="switchTab('xss')">2. Cross-Site Scripting</button>
+            <button class="tab-btn" onclick="switchTab('idor')">3. IDOR / BOLA</button>
+            <button class="tab-btn" onclick="switchTab('ssrf')">4. SSRF</button>
+        </div>
+
+        <!-- TAB 1: SQLi -->
+        <div id="tab-sqli" class="tab-content active">
+            <h2>1. SQL Injection (CWE-89)</h2>
+            <p>Direct string interpolation vs Parameterized Prepared Statements.</p>
+            <div class="grid-2">
+                <div class="box box-vuln">
+                    <h3>Vulnerable Pattern</h3>
+                    <code>query = f"SELECT * FROM users WHERE username = '{username}'"</code>
+                    <p style="margin-top: 8px;">Allows altering SQL syntax using quotes and boolean expressions.</p>
+                </div>
+                <div class="box box-fixed">
+                    <h3>Remediated Pattern</h3>
+                    <code>cursor.execute("SELECT * FROM users WHERE username = ?", (username,))</code>
+                    <p style="margin-top: 8px;">Database driver compiles query before binding inputs as literal operands.</p>
+                </div>
+            </div>
+
+            <h3>Test Live Endpoint</h3>
+            <div class="test-form">
+                <input type="text" id="sqli-input" value="' OR '1'='1">
+                <button class="btn-vuln" onclick="testEndpoint('sqli', 'vulnerable', 'username', document.getElementById('sqli-input').value)">Test /vulnerable</button>
+                <button class="btn-fixed" onclick="testEndpoint('sqli', 'fixed', 'username', document.getElementById('sqli-input').value)">Test /fixed</button>
+            </div>
+            <div>
+                <button class="btn-quick" onclick="document.getElementById('sqli-input').value='alice'">Payload: alice (normal)</button>
+                <button class="btn-quick" onclick="document.getElementById('sqli-input').value='\' OR \'1\'=\'1'">Payload: ' OR '1'='1 (bypass)</button>
+                <button class="btn-quick" onclick="document.getElementById('sqli-input').value='\' UNION SELECT id, name, sql, 4, 5 FROM sqlite_master --'">Payload: UNION schema extraction</button>
+            </div>
+            <div class="output-box" id="sqli-output">// Response will display here...</div>
+        </div>
+
+        <!-- TAB 2: XSS -->
+        <div id="tab-xss" class="tab-content">
+            <h2>2. Reflected Cross-Site Scripting (CWE-79)</h2>
+            <p>Unescaped HTML Reflection vs HTML Entity Encoding & Content-Security-Policy.</p>
+            <div class="grid-2">
+                <div class="box box-vuln">
+                    <h3>Vulnerable Pattern</h3>
+                    <code>return f"&lt;h2&gt;Results: {q}&lt;/h2&gt;"</code>
+                    <p style="margin-top: 8px;">Browser parses injected HTML tags as executable script elements.</p>
+                </div>
+                <div class="box box-fixed">
+                    <h3>Remediated Pattern</h3>
+                    <code>html.escape(q) + CSP: default-src 'self'</code>
+                    <p style="margin-top: 8px;">Encodes HTML entities (&amp;lt;, &amp;gt;) and enforces browser-level execution policies.</p>
+                </div>
+            </div>
+
+            <h3>Test Live Endpoint</h3>
+            <div class="test-form">
+                <input type="text" id="xss-input" value="<script>alert('XSS-Triggered')</script>">
+                <button class="btn-vuln" onclick="testRawEndpoint('/api/xss/vulnerable?q=' + encodeURIComponent(document.getElementById('xss-input').value), 'xss-output')">Test /vulnerable</button>
+                <button class="btn-fixed" onclick="testRawEndpoint('/api/xss/fixed?q=' + encodeURIComponent(document.getElementById('xss-input').value), 'xss-output')">Test /fixed</button>
+            </div>
+            <div class="output-box" id="xss-output">// Response will display here...</div>
+        </div>
+
+        <!-- TAB 3: IDOR -->
+        <div id="tab-idor" class="tab-content">
+            <h2>3. Insecure Direct Object Reference (IDOR) - CWE-639</h2>
+            <p>Direct primary key lookup vs Owner-scoped tenant queries.</p>
+            <p><em>Simulated Session Context: Authenticated as 'Alice' (User ID: 2).</em></p>
+            <div class="grid-2">
+                <div class="box box-vuln">
+                    <h3>Vulnerable Pattern</h3>
+                    <code>SELECT * FROM notes WHERE id = ?</code>
+                    <p style="margin-top: 8px;">Allows Alice to fetch note 3 (Bob's private note) or note 4 (Admin key).</p>
+                </div>
+                <div class="box box-fixed">
+                    <h3>Remediated Pattern</h3>
+                    <code>if note['is_private'] and note['owner_id'] != current_user.id: abort(403)</code>
+                    <p style="margin-top: 8px;">Enforces object-level authorization and restricts access to owned assets.</p>
+                </div>
+            </div>
+
+            <h3>Test Live Endpoint</h3>
+            <div class="test-form">
+                <input type="text" id="idor-input" value="3" placeholder="Note ID (1-4)">
+                <button class="btn-vuln" onclick="testIdor('vulnerable', document.getElementById('idor-input').value)">Test /vulnerable</button>
+                <button class="btn-fixed" onclick="testIdor('fixed', document.getElementById('idor-input').value)">Test /fixed</button>
+            </div>
+            <div>
+                <button class="btn-quick" onclick="document.getElementById('idor-input').value='1'">Note 1 (Alice public)</button>
+                <button class="btn-quick" onclick="document.getElementById('idor-input').value='2'">Note 2 (Alice private)</button>
+                <button class="btn-quick" onclick="document.getElementById('idor-input').value='3'">Note 3 (Bob private - IDOR)</button>
+                <button class="btn-quick" onclick="document.getElementById('idor-input').value='4'">Note 4 (Admin master key - IDOR)</button>
+            </div>
+            <div class="output-box" id="idor-output">// Response will display here...</div>
+        </div>
+
+        <!-- TAB 4: SSRF -->
+        <div id="tab-ssrf" class="tab-content">
+            <h2>4. Server-Side Request Forgery (SSRF) - CWE-918</h2>
+            <p>Unvalidated backend fetching vs DNS IP resolution and private CIDR blocklisting.</p>
+            <div class="grid-2">
+                <div class="box box-vuln">
+                    <h3>Vulnerable Pattern</h3>
+                    <code>urllib.request.urlopen(user_url)</code>
+                    <p style="margin-top: 8px;">Allows reaching internal microservices (127.0.0.1) and cloud metadata.</p>
+                </div>
+                <div class="box box-fixed">
+                    <h3>Remediated Pattern</h3>
+                    <code>ipaddress.ip_address(dns_ip).is_private or is_loopback</code>
+                    <p style="margin-top: 8px;">Rejects loopback, private, link-local IPs and disables HTTP redirects.</p>
+                </div>
+            </div>
+
+            <h3>Test Live Endpoint</h3>
+            <div class="test-form">
+                <input type="text" id="ssrf-input" value="http://127.0.0.1:5000/api/ssrf/internal-admin-status">
+                <button class="btn-vuln" onclick="testEndpoint('ssrf', 'vulnerable', 'url', document.getElementById('ssrf-input').value)">Test /vulnerable</button>
+                <button class="btn-fixed" onclick="testEndpoint('ssrf', 'fixed', 'url', document.getElementById('ssrf-input').value)">Test /fixed</button>
+            </div>
+            <div>
+                <button class="btn-quick" onclick="document.getElementById('ssrf-input').value='http://127.0.0.1:5000/api/ssrf/internal-admin-status'">Loopback admin endpoint</button>
+                <button class="btn-quick" onclick="document.getElementById('ssrf-input').value='http://169.254.169.254/latest/meta-data/'">AWS/Cloud metadata IP</button>
+                <button class="btn-quick" onclick="document.getElementById('ssrf-input').value='file:///etc/passwd'">file:// scheme payload</button>
+            </div>
+            <div class="output-box" id="ssrf-output">// Response will display here...</div>
+        </div>
+    </div>
+
+    <script>
+        function switchTab(name) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            event.target.classList.add('active');
+            document.getElementById('tab-' + name).classList.add('active');
+        }
+
+        async function testEndpoint(vulnType, mode, paramName, paramVal) {
+            const outBox = document.getElementById(vulnType + '-output');
+            outBox.innerText = `[+] Fetching /api/${vulnType}/${mode}?${paramName}=${encodeURIComponent(paramVal)} ...\n`;
+            try {
+                const res = await fetch(`/api/${vulnType}/${mode}?${paramName}=${encodeURIComponent(paramVal)}`);
+                const data = await res.json();
+                outBox.innerText = `HTTP ${res.status} ${res.statusText}\n\n` + JSON.stringify(data, null, 2);
+            } catch(e) {
+                outBox.innerText = `[!] Error: ${e}`;
+            }
+        }
+
+        async function testRawEndpoint(url, outId) {
+            const outBox = document.getElementById(outId);
+            outBox.innerText = `[+] Fetching ${url} ...\n`;
+            try {
+                const res = await fetch(url);
+                const text = await res.text();
+                outBox.innerText = `HTTP ${res.status} ${res.statusText}\nHeaders:\nCSP: ${res.headers.get('Content-Security-Policy') || 'None'}\n\nBody:\n${text}`;
+            } catch(e) {
+                outBox.innerText = `[!] Error: ${e}`;
+            }
+        }
+
+        async function testIdor(mode, noteId) {
+            const outBox = document.getElementById('idor-output');
+            const url = `/api/idor/${mode}/notes/${noteId}`;
+            outBox.innerText = `[+] Fetching ${url} ...\n`;
+            try {
+                const res = await fetch(url);
+                const data = await res.json();
+                outBox.innerText = `HTTP ${res.status} ${res.statusText}\n\n` + JSON.stringify(data, null, 2);
+            } catch(e) {
+                outBox.innerText = `[!] Error: ${e}`;
+            }
+        }
+    </script>
+</body>
+</html>
