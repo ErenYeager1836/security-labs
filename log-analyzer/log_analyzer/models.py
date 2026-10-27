@@ -42,6 +42,8 @@ class SecurityAlert:
     description: str
     count: int = 1
     evidence: List[str] = field(default_factory=list)
+    mitre_attack_id: str = ""
+    mitre_tactic: str = ""
 
 
 @dataclass

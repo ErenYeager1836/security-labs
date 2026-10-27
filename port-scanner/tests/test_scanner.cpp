@@ -193,6 +193,28 @@ void test_scan_range_multithreaded() {
     std::cout << "    PASSED\n";
 }
 
+void test_structured_export_json_and_csv() {
+    std::cout << "[+] Running test_structured_export_json_and_csv...\n";
+    std::vector<PortResult> sample_results = {
+        {22, true, "SSH-2.0-OpenSSH_8.9", "SSH"},
+        {80, true, "HTTP/1.1 200 OK", "HTTP"},
+        {443, false, "", "HTTPS"}
+    };
+
+    std::string json = PortScanner::to_json("127.0.0.1", sample_results);
+    assert(json.find("\"host\": \"127.0.0.1\"") != std::string::npos);
+    assert(json.find("\"port\": 22") != std::string::npos);
+    assert(json.find("\"service\": \"SSH\"") != std::string::npos);
+    assert(json.find("\"banner\": \"SSH-2.0-OpenSSH_8.9\"") != std::string::npos);
+
+    std::string csv = PortScanner::to_csv("127.0.0.1", sample_results);
+    assert(csv.find("host,port,state,service,banner") != std::string::npos);
+    assert(csv.find("127.0.0.1,22,open,SSH,\"SSH-2.0-OpenSSH_8.9\"") != std::string::npos);
+    assert(csv.find("127.0.0.1,443,closed,HTTPS,\"\"") != std::string::npos);
+
+    std::cout << "    PASSED\n";
+}
+
 int main() {
     std::cout << "=== Running port-scanner test suite ===\n";
     test_is_loopback();
@@ -200,6 +222,7 @@ int main() {
     test_scan_open_port_and_banner();
     test_scan_closed_port();
     test_scan_range_multithreaded();
-    std::cout << "=== All 5 port-scanner tests passed successfully! ===\n";
+    test_structured_export_json_and_csv();
+    std::cout << "=== All 6 port-scanner tests passed successfully! ===\n";
     return 0;
 }

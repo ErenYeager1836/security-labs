@@ -48,6 +48,12 @@ public:
         const PortScanConfig& config,
         std::function<void(int scanned, int total)> progress_callback = nullptr
     );
+
+    // Formats scan results into structured JSON
+    static std::string to_json(const std::string& host, const std::vector<PortResult>& results);
+
+    // Formats scan results into CSV
+    static std::string to_csv(const std::string& host, const std::vector<PortResult>& results);
 };
 
 } // namespace security_labs

@@ -12,5 +12,6 @@ testpaths = [
     "hardening-auditor/tests",
     "dependency-checker/tests",
     "vuln-app-lab/tests",
-    "password-demo/tests"
+    "password-demo/tests",
+    "tests"
 ]

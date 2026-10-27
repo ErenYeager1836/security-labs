@@ -286,4 +286,59 @@ std::vector<PortResult> PortScanner::scan_range(
     return open_results;
 }
 
+static std::string escape_json(const std::string& str) {
+    std::string out;
+    for (char c : str) {
+        if (c == '"') out += "\\\"";
+        else if (c == '\\') out += "\\\\";
+        else if (c == '\b') out += "\\b";
+        else if (c == '\f') out += "\\f";
+        else if (c == '\n') out += "\\n";
+        else if (c == '\r') out += "\\r";
+        else if (c == '\t') out += "\\t";
+        else if (static_cast<unsigned char>(c) < 32) {
+            // omit non-printable control bytes
+        } else {
+            out += c;
+        }
+    }
+    return out;
+}
+
+std::string PortScanner::to_json(const std::string& host, const std::vector<PortResult>& results) {
+    std::string json = "{\n";
+    json += "  \"host\": \"" + escape_json(host) + "\",\n";
+    json += "  \"open_ports_count\": " + std::to_string(results.size()) + ",\n";
+    json += "  \"ports\": [\n";
+
+    for (size_t i = 0; i < results.size(); ++i) {
+        const auto& r = results[i];
+        json += "    {\n";
+        json += "      \"port\": " + std::to_string(r.port) + ",\n";
+        json += "      \"state\": \"" + std::string(r.is_open ? "open" : "closed") + "\",\n";
+        json += "      \"service\": \"" + escape_json(r.service_hint) + "\",\n";
+        json += "      \"banner\": \"" + escape_json(r.banner) + "\"\n";
+        json += "    }" + std::string(i + 1 < results.size() ? "," : "") + "\n";
+    }
+
+    json += "  ]\n";
+    json += "}\n";
+    return json;
+}
+
+std::string PortScanner::to_csv(const std::string& host, const std::vector<PortResult>& results) {
+    std::string csv = "host,port,state,service,banner\n";
+    for (const auto& r : results) {
+        std::string escaped_banner;
+        for (char c : r.banner) {
+            if (c == '"') escaped_banner += "\"\"";
+            else if (c == '\r' || c == '\n') escaped_banner += ' ';
+            else escaped_banner += c;
+        }
+        csv += host + "," + std::to_string(r.port) + "," + (r.is_open ? "open" : "closed") + "," +
+               r.service_hint + ",\"" + escaped_banner + "\"\n";
+    }
+    return csv;
+}
+
 } // namespace security_labs

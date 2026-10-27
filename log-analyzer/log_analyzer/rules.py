@@ -72,6 +72,8 @@ def analyze_ssh_events(ssh_events: List[SSHEvent], brute_force_threshold: int = 
                 ),
                 count=count,
                 evidence=evidence,
+                mitre_attack_id="T1110.001",
+                mitre_tactic="Credential Access"
             )
             alerts.append(alert)
 
@@ -105,6 +107,8 @@ def analyze_nginx_events(nginx_events: List[NginxEvent]) -> List[SecurityAlert]:
                 description=f"Automated tool activity detected from {ip}: {summary_tools}",
                 count=total_scanner_reqs,
                 evidence=[f"Tool signatures: {summary_tools}"],
+                mitre_attack_id="T1595.002",
+                mitre_tactic="Reconnaissance"
             )
         )
 
@@ -134,6 +138,8 @@ def analyze_nginx_events(nginx_events: List[NginxEvent]) -> List[SecurityAlert]:
                     f"Sample probed endpoints: {', '.join(sample_paths)}",
                     f"HTTP response distribution: {status_summary}",
                 ],
+                mitre_attack_id="T1083",
+                mitre_tactic="Discovery"
             )
         )
 
@@ -157,8 +163,55 @@ def analyze_nginx_events(nginx_events: List[NginxEvent]) -> List[SecurityAlert]:
                 description=f"Identified {count} active exploitation payloads in HTTP request line from {ip}.",
                 count=count,
                 evidence=[f"Observed payload samples: {', '.join(sample_payloads)}"],
+                mitre_attack_id="T1190",
+                mitre_tactic="Initial Access"
             )
         )
+
+    return alerts
+
+
+def stream_inspect_nginx_event(ev: NginxEvent) -> List[SecurityAlert]:
+    """Inspects a single live streaming Nginx event and returns immediate alerts if an exploit or scanner signature triggers."""
+    immediate_alerts: List[SecurityAlert] = []
+    decoded_path = urllib.parse.unquote_plus(ev.path)
+
+    # Check exploit payloads
+    for pat, desc in EXPLOIT_PAYLOAD_PATTERNS:
+        if pat.search(ev.path) or pat.search(decoded_path):
+            immediate_alerts.append(
+                SecurityAlert(
+                    category="Live Web Exploit Detected",
+                    severity="CRITICAL",
+                    source_ip=ev.remote_ip,
+                    description=f"Immediate threat: {desc} detected in path '{ev.path[:60]}'",
+                    count=1,
+                    evidence=[f"Method: {ev.method}, User-Agent: {ev.user_agent}"],
+                    mitre_attack_id="T1190",
+                    mitre_tactic="Initial Access"
+                )
+            )
+            break
+
+    # Check scanner user agents
+    if ev.user_agent:
+        for pat, tag in SUSPICIOUS_UA_PATTERNS:
+            if pat.search(ev.user_agent):
+                immediate_alerts.append(
+                    SecurityAlert(
+                        category="Live Web Scanner Detected",
+                        severity="HIGH",
+                        source_ip=ev.remote_ip,
+                        description=f"Reconnaissance tool signature detected: {tag}",
+                        count=1,
+                        evidence=[f"User-Agent: {ev.user_agent[:60]}"],
+                        mitre_attack_id="T1595.002",
+                        mitre_tactic="Reconnaissance"
+                    )
+                )
+                break
+
+    return immediate_alerts
 
     sev_weight = {"CRITICAL": 3, "HIGH": 2, "MEDIUM": 1, "LOW": 0}
     alerts.sort(key=lambda a: (sev_weight.get(a.severity, 0), a.count), reverse=True)

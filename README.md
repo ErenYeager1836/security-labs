@@ -325,18 +325,18 @@ timeline
 - [x] Application-layer banner grabbing (HTTP, SSH, FTP, SMTP, MySQL).
 - [x] SocketGuard RAII socket cleanup abstraction preventing file descriptor leaks.
 - [x] Strict safety guard enforcement restricting active scans to `127.0.0.1` and loopback interfaces.
+- [x] **Structured Output**: Export results directly to JSON and CSV for automated vulnerability management ingestion.
 - [ ] **Raw SYN Stealth Scanning**: Raw socket TCP SYN scanning (`SOCK_RAW`) on Linux with `CAP_NET_RAW` capability to detect open ports without completing the three-way handshake.
 - [ ] **UDP Service Scanning**: Support UDP port probing via ICMP port-unreachable error frame parsing (`SOCK_RAW` / `IPPROTO_ICMP`).
 - [ ] **TLS Certificate Inspection**: Automatic TLS negotiation on port 443/8443 to extract certificate Subject Alternative Names (SAN), issuer CA, and expiration dates.
 - [ ] **OS Fingerprinting**: Heuristic operating system detection based on initial TCP Window Size, IP TTL defaults, and TCP options order.
-- [ ] **Structured Output**: Export results directly to JSON, CSV, and SARIF for automated vulnerability management ingestion.
 
 #### 2. `log-analyzer`
 - [x] Regex parsing for SSH `auth.log` and Nginx `access.log`.
 - [x] Threat heuristics: SSH brute-force, web scanner user-agents (Nikto, sqlmap, gobuster), path traversal, SQL injection probes.
 - [x] Severity scoring (LOW, MEDIUM, HIGH, CRITICAL) and actionable Markdown incident reporting.
-- [ ] **Real-Time Streaming Analysis**: Inotify/filesystem-tailing mode (`log-analyzer --stream /var/log/nginx/access.log`) for live security incident alerting.
-- [ ] **MITRE ATT&CK Mapping**: Automatic categorization of detected incident signatures to ATT&CK tactics and techniques (e.g., T1110 Brute Force, T1190 Exploit Public-Facing Application).
+- [x] **Real-Time Streaming Analysis & Live Threat Alerting**: Inspect incoming HTTP event streams for live exploit and scanner detection.
+- [x] **MITRE ATT&CK Mapping**: Automatic categorization of detected incident signatures to ATT&CK tactics and techniques (T1110.001 Brute Force, T1190 Exploit Public-Facing Application, T1595.002 Active Scanning, T1083 Discovery).
 - [ ] **SIEM / Webhook Dispatcher**: Real-time incident forwarding to Slack, Discord, Microsoft Teams, or Elastic Common Schema (ECS) endpoints.
 - [ ] **GeoIP Enrichment**: Integrated MaxMind GeoLite2 lookup for geolocation tracking of external attack sources.
 
@@ -344,17 +344,17 @@ timeline
 - [x] Read-only CIS baseline audits across SSH daemon configuration, critical file permissions, open listening sockets, and sudo privileges.
 - [x] Hardening posture score calculation (0-100) and actionable remediation commands.
 - [x] Guaranteed zero-risk read-only safety invariant.
+- [x] **Automated Remediation Engine**: Non-destructive remediation plan generator with pre-flight backup targets and dry-run unified diff previews.
 - [ ] **Firewall & Kernel Rules**: Auditing UFW/iptables default deny policies, IP forwarding status (`net.ipv4.ip_forward=0`), and ASLR kernel parameter configuration.
-- [ ] **Automated Remediation Engine**: Optional `--remediate` execution flag with automated pre-flight config file backups (`.bak`) and dry-run unified diff previews.
 - [ ] **OpenSCAP / SCAP Compliance**: Exporting audit results to standard SCAP DataStream XML for integration into enterprise compliance reporting tools.
 
 #### 4. `dependency-checker`
 - [x] Manifest parsing for Python (`requirements.txt`) and Java Maven (`pom.xml`).
 - [x] Google OSV.dev batch REST API client for fast $O(1)$ batch vulnerability resolution.
 - [x] Severity threshold filtering (LOW, MEDIUM, HIGH, CRITICAL) and CI/CD non-zero exit codes.
+- [x] **SBOM Generation**: Exporting compliant Software Bill of Materials in CycloneDX 1.5 JSON with Package URL (purl) specifications.
 - [ ] **Extended Lockfile Support**: Parsing lockfiles including `package-lock.json` (npm), `poetry.lock` / `Pipfile.lock` (Python), and `Cargo.lock` (Rust).
 - [ ] **Transitive Dependency Tree**: Dependency graph traversal to identify deep vulnerabilities introduced by indirect child dependencies.
-- [ ] **SBOM Generation**: Exporting compliant Software Bill of Materials in CycloneDX 1.5 JSON and SPDX 2.3 formats.
 - [ ] **Automated Remediation PRs**: Generating automated dependency upgrade suggestions based on OSV fixed-version metadata.
 
 #### 5. `vuln-app-lab`
