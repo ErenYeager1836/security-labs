@@ -1,0 +1,6 @@
+# /etc/sudoers - Unhardened sample configuration
+# Notice the dangerous NOPASSWD directives and lack of use_pty / logfile
+
+root ALL=(ALL:ALL) ALL
+deploy ALL=(ALL) NOPASSWD: ALL
+%sudo ALL=(ALL:ALL) NOPASSWD: ALL

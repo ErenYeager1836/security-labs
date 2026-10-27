@@ -1,0 +1,7 @@
+{
+  "etc/shadow": "0666",
+  "etc/gshadow": "0666",
+  "etc/passwd": "0666",
+  "etc/group": "0666",
+  "etc/sudoers": "0666"
+}

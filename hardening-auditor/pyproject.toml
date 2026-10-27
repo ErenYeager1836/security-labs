@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "hardening-auditor"
+version = "0.1.0"
+description = "CIS-style read-only security compliance and hardening auditor for Linux systems"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [
+    { name = "Security Labs" }
+]
+keywords = ["security", "hardening", "cis-benchmark", "audit", "compliance", "linux"]
+dependencies = []
+
+[project.scripts]
+hardening-auditor = "hardening_auditor.cli:main"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]

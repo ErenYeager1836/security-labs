@@ -1,0 +1,7 @@
+root:x:0:
+daemon:x:1:
+bin:x:2:
+sys:x:3:
+sudo:x:27:ubuntu,deploy
+ubuntu:x:1000:
+deploy:x:1001:
