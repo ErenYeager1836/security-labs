@@ -8,6 +8,7 @@ Contains deliberate SQLi, XSS, IDOR, and SSRF flaws with side-by-side remediated
 from __future__ import annotations
 
 import argparse
+import os
 import sys
 from flask import Flask, jsonify, render_template
 
@@ -55,10 +56,13 @@ def main() -> int:
     )
     parser.add_argument("--host", default="127.0.0.1", help="Host interface to bind (default: 127.0.0.1)")
     parser.add_argument("--port", type=int, default=5000, help="Port to listen on (default: 5000)")
+    parser.add_argument("--in-docker", action="store_true", help="Allow binding inside containerized Docker environment")
     args = parser.parse_args()
 
-    # Safety constraint: enforce localhost binding
-    if args.host not in {"127.0.0.1", "localhost", "::1"}:
+    in_docker = args.in_docker or os.environ.get("DOCKER_CONTAINER", "0") == "1"
+
+    # Safety constraint: enforce localhost binding unless in isolated container
+    if not in_docker and args.host not in {"127.0.0.1", "localhost", "::1"}:
         print(f"[!] SAFETY WARNING: vuln-app-lab contains intentional vulnerabilities and must ONLY be run on localhost!")
         print(f"[!] Refusing to bind to external interface: {args.host}")
         return 1

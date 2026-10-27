@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  vuln-app-lab:
+    build:
+      context: ./vuln-app-lab
+      dockerfile: Dockerfile
+    container_name: security-labs-vuln-app
+    ports:
+      # Bound strictly to localhost loopback interface for safety
+      - "127.0.0.1:5000:5000"
+    environment:
+      - DOCKER_CONTAINER=1
+      - PYTHONUNBUFFERED=1
+    restart: unless-stopped

@@ -70,3 +70,6 @@ jobs:
 
       - name: Test password-demo
         run: pytest password-demo/tests -v
+
+      - name: Test Phase 2 Suite
+        run: pytest tests -v

@@ -3,7 +3,10 @@ Unit tests for Phase 2 defensive security enhancements across security-labs.
 """
 
 import json
-import pytest
+try:
+    import pytest
+except ImportError:
+    pytest = None
 
 from log_analyzer.models import NginxEvent, SSHEvent
 from log_analyzer.rules import analyze_ssh_events, analyze_nginx_events, stream_inspect_nginx_event
