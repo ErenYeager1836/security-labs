@@ -167,3 +167,18 @@ ctest --test-dir build --output-on-failure
    - Setting `--threads` higher than the operating system's per-process file descriptor ceiling (e.g. `RLIMIT_NOFILE` on Linux, typically 1024) can cause socket creation exhaustion.
 3. **TCP Only**:
    - Does not probe UDP services, which require ICMP port unreachable parsing.
+
+---
+
+## Roadmap & Future Enhancements
+
+- [x] Multithreaded TCP connect scanning engine with configurable timeout and thread pool size.
+- [x] SocketGuard RAII socket cleanup abstraction preventing file descriptor leaks.
+- [x] Application-layer banner grabbing for HTTP, SSH, FTP, SMTP, and MySQL services.
+- [x] Strict safety guard enforcement restricting active scans to `127.0.0.1` and loopback interfaces.
+- [ ] **Raw SYN Stealth Scanning**: Implement raw socket TCP SYN scanning (`SOCK_RAW`) on Linux with `CAP_NET_RAW` capability to detect open ports without completing the three-way handshake.
+- [ ] **UDP Service Scanning**: Support UDP port probing via ICMP port-unreachable error frame parsing (`SOCK_RAW` / `IPPROTO_ICMP`).
+- [ ] **TLS Certificate Inspection**: Automatic TLS negotiation on port 443/8443 to extract certificate Subject Alternative Names (SAN), issuer CA, and expiration dates.
+- [ ] **OS Fingerprinting**: Heuristic operating system detection based on initial TCP Window Size, IP TTL defaults, and TCP options order.
+- [ ] **Structured Output**: Export results directly to JSON, CSV, and SARIF for automated vulnerability management ingestion.
+
