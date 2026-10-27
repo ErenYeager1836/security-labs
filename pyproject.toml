@@ -1,0 +1,16 @@
+[tool.pytest.ini_options]
+addopts = "--import-mode=importlib"
+pythonpath = [
+    "log-analyzer",
+    "hardening-auditor",
+    "dependency-checker",
+    "vuln-app-lab",
+    "password-demo"
+]
+testpaths = [
+    "log-analyzer/tests",
+    "hardening-auditor/tests",
+    "dependency-checker/tests",
+    "vuln-app-lab/tests",
+    "password-demo/tests"
+]
