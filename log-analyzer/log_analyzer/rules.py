@@ -167,7 +167,8 @@ def analyze_nginx_events(nginx_events: List[NginxEvent]) -> List[SecurityAlert]:
                 mitre_tactic="Initial Access"
             )
         )
-
+    sev_weight = {"CRITICAL": 3, "HIGH": 2, "MEDIUM": 1, "LOW": 0}
+    alerts.sort(key=lambda a: (sev_weight.get(a.severity, 0), a.count), reverse=True)
     return alerts
 
 
@@ -212,7 +213,3 @@ def stream_inspect_nginx_event(ev: NginxEvent) -> List[SecurityAlert]:
                 break
 
     return immediate_alerts
-
-    sev_weight = {"CRITICAL": 3, "HIGH": 2, "MEDIUM": 1, "LOW": 0}
-    alerts.sort(key=lambda a: (sev_weight.get(a.severity, 0), a.count), reverse=True)
-    return alerts
