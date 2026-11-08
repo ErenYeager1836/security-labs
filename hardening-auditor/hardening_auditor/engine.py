@@ -40,15 +40,19 @@ def run_system_audit(root_dir: Optional[Path] = None) -> AuditSummary:
     passed = sum(1 for r in all_results if r.status == RuleStatus.PASS)
     failed = sum(1 for r in all_results if r.status == RuleStatus.FAIL)
     skipped = sum(1 for r in all_results if r.status == RuleStatus.SKIP)
+    could_not_check = sum(1 for r in all_results if r.status == RuleStatus.COULD_NOT_CHECK)
 
-    scored_total = passed + failed
-    score_pct = (passed / scored_total * 100.0) if scored_total > 0 else 100.0
+    # A rule that "could not check" does NOT count as a pass in the score.
+    # It is counted in the scored denominator alongside passed and failed checks.
+    scored_total = passed + failed + could_not_check
+    score_pct = (passed / scored_total * 100.0) if scored_total > 0 else 0.0
 
     return AuditSummary(
         total_rules=len(all_results),
         passed_rules=passed,
         failed_rules=failed,
         skipped_rules=skipped,
+        could_not_check_rules=could_not_check,
         score_percentage=round(score_pct, 1),
         results=all_results,
     )

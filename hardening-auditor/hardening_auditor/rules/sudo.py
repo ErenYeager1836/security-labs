@@ -13,9 +13,14 @@ from typing import List, Set, Tuple
 from hardening_auditor.models import Category, RuleResult, RuleStatus, Severity
 
 
-def read_sudoers_lines(root_dir: Path) -> List[Tuple[str, str]]:
-    """Reads all non-comment lines from /etc/sudoers and /etc/sudoers.d/*."""
+def read_sudoers(root_dir: Path) -> Tuple[List[Tuple[str, str]], List[str]]:
+    """Reads all non-comment lines from /etc/sudoers and /etc/sudoers.d/*.
+
+    Returns:
+        (lines_with_source, unreadable_files)
+    """
     lines_with_source: List[Tuple[str, str]] = []
+    unreadable_files: List[str] = []
     sudoers_main = root_dir / "etc" / "sudoers"
 
     files_to_read: List[Path] = []
@@ -32,8 +37,8 @@ def read_sudoers_lines(root_dir: Path) -> List[Tuple[str, str]]:
             for dropin in sorted(sudoers_d.iterdir()):
                 if dropin.is_file() and not dropin.name.startswith((".", "~")) and not dropin.name.endswith("~"):
                     files_to_read.append(dropin)
-        except OSError:
-            pass
+        except OSError as e:
+            unreadable_files.append(f"{sudoers_d} ({e})")
 
     for p in files_to_read:
         try:
@@ -42,16 +47,39 @@ def read_sudoers_lines(root_dir: Path) -> List[Tuple[str, str]]:
                     sline = line.strip()
                     if sline and not sline.startswith("#"):
                         lines_with_source.append((sline, p.name))
-        except OSError:
-            pass
+        except OSError as e:
+            unreadable_files.append(f"{p} ({e})")
 
-    return lines_with_source
+    return lines_with_source, unreadable_files
+
+
+def read_sudoers_lines(root_dir: Path) -> List[Tuple[str, str]]:
+    """Backward-compatible helper returning parsed lines only."""
+    lines, _ = read_sudoers(root_dir)
+    return lines
 
 
 def audit_sudo_config(root_dir: Path) -> List[RuleResult]:
     """Audits sudoers configuration files for CIS benchmark compliance."""
     results: List[RuleResult] = []
-    active_lines = read_sudoers_lines(root_dir)
+    active_lines, unreadable_files = read_sudoers(root_dir)
+
+    if unreadable_files:
+        err_msg = "; ".join(unreadable_files)
+        results.append(
+            RuleResult(
+                rule_id="CIS-SUDO-00",
+                title="Sudoers Configuration File Audit",
+                category=Category.SUDO.value,
+                severity=Severity.HIGH.value,
+                status=RuleStatus.COULD_NOT_CHECK,
+                current_value=f"Could not read sudoers file(s): {err_msg}",
+                expected_value="Sudoers files readable for compliance audit",
+                remediation="Grant read permissions on /etc/sudoers and /etc/sudoers.d/ to the audit user, or run with sudo.",
+                rationale="The sudoers configuration file exists but cannot be read due to permission restrictions or OS error.",
+            )
+        )
+        return results
 
     if not active_lines:
         results.append(

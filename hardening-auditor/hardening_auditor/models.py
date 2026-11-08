@@ -13,6 +13,7 @@ class RuleStatus(str, Enum):
     PASS = "PASS"
     FAIL = "FAIL"
     SKIP = "SKIP"
+    COULD_NOT_CHECK = "could not check"
     MANUAL = "MANUAL"
 
 
@@ -51,7 +52,8 @@ class AuditSummary:
     passed_rules: int
     failed_rules: int
     skipped_rules: int
-    score_percentage: float
+    could_not_check_rules: int = 0
+    score_percentage: float = 0.0
     results: List[RuleResult] = field(default_factory=list)
 
     @property

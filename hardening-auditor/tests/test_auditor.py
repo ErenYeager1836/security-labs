@@ -89,6 +89,31 @@ def test_sudo_hardened():
         assert r.status == RuleStatus.PASS, f"{r.rule_id} should PASS"
 
 
+def test_sudo_unreadable_file_reports_could_not_check(tmp_path: Path):
+    """If sudoers file exists but cannot be read (PermissionError / OSError),
+    it must report 'could not check' (a distinct status that does not count as a pass in the score),
+    not silently skip."""
+    from unittest.mock import patch
+
+    sudoers_dir = tmp_path / "etc"
+    sudoers_dir.mkdir(parents=True)
+    sudoers_file = sudoers_dir / "sudoers"
+    sudoers_file.write_text("deploy ALL=(ALL) ALL\n")
+
+    with patch("builtins.open", side_effect=PermissionError("Permission denied: '/etc/sudoers'")):
+        results = audit_sudo_config(tmp_path)
+        assert len(results) == 1
+        r = results[0]
+        assert r.status == RuleStatus.COULD_NOT_CHECK
+        assert r.status == "could not check"
+        assert "Could not read sudoers" in r.current_value
+
+        summary = run_system_audit(tmp_path)
+        assert summary.could_not_check_rules >= 1
+        # It must NOT count as a pass in the compliance score
+        assert summary.score_percentage < 100.0
+
+
 def test_full_system_audit_unhardened_score():
     summary = run_system_audit(UNHARDENED_DIR)
     assert summary.total_rules >= 18

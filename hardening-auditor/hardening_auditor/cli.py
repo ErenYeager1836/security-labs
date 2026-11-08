@@ -10,11 +10,6 @@ import os
 from pathlib import Path
 import sys
 
-# Ensure parent directory is in sys.path when invoked directly as a script
-_pkg_root = Path(__file__).resolve().parent.parent
-if str(_pkg_root) not in sys.path:
-    sys.path.insert(0, str(_pkg_root))
-
 from hardening_auditor.engine import run_system_audit
 from hardening_auditor.models import AuditSummary, RuleResult, RuleStatus, Severity
 
@@ -128,6 +123,7 @@ def main() -> int:
             "score_percentage": summary.score_percentage,
             "passed": summary.passed_rules,
             "failed": summary.failed_rules,
+            "could_not_check": summary.could_not_check_rules,
             "skipped": summary.skipped_rules,
             "critical_failures": summary.critical_failures,
             "high_failures": summary.high_failures,
@@ -157,6 +153,8 @@ def main() -> int:
     print(f"[*] Total Controls Audited: {summary.total_rules}")
     print(f"[+] Passed Controls       : {summary.passed_rules}")
     print(f"[-] Failed Controls       : {summary.failed_rules}")
+    if summary.could_not_check_rules > 0:
+        print(f"[?] Could Not Check       : {summary.could_not_check_rules}")
     print(f"[~] Skipped Controls      : {summary.skipped_rules}")
     print(f"[*] Compliance Score      : {summary.score_percentage}%")
     print("-" * 64)
