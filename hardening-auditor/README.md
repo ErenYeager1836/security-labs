@@ -4,8 +4,8 @@
 [![Python: 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/)
 [![Read Only](https://img.shields.io/badge/mode-read--only-brightgreen.svg)](#read-only-safety-guarantee)
 
-> **Read-only security compliance and hardening auditor for Linux systems aligned with CIS Benchmark recommendations.**  
-> Audits SSH configurations, system file permissions, dangerous open ports, and sudo privileges against published CIS Linux Benchmark recommendations, calculates a compliance score, and provides actionable remediation commands.
+> **Read-only security compliance and hardening auditor for Linux systems based on common hardening recommendations.**  
+> Audits SSH configurations, system file permissions, dangerous open ports, and sudo privileges, calculates a compliance score, and provides actionable remediation commands.
 
 ---
 
@@ -16,32 +16,32 @@
 
 ---
 
-## Benchmark Item Mapping & Control Counts
+## Hardening Checks & Control Counts
 
-The checks in this tool are defensive configuration audits mapped directly to recommendation items from the **CIS Distribution-Independent Linux / Ubuntu Linux Benchmark (v1.1.0/v2.0.0)**. They should not be confused with top-level CIS Critical Security Controls (CIS Controls v8).
+The checks in this tool are based on common Linux security hardening recommendations (such as principles popularized by standard hardening guides like CIS Benchmarks and NIST SP 800-123). Rather than claiming official compliance certification or pinning to a specific benchmark edition, each check targets a specific, auditable system configuration.
 
-| Rule ID | CIS Benchmark Item | Category | Description |
-| :--- | :--- | :--- | :--- |
-| `CIS-SSH-01` | Section 5.2.10 | SSH | Disable direct SSH root login (`PermitRootLogin no`) |
-| `CIS-SSH-02` | Section 5.2.14 | SSH | Require SSH public key authentication (`PasswordAuthentication no`) |
-| `CIS-SSH-03` | Section 5.2.11 | SSH | Disable empty SSH passwords (`PermitEmptyPasswords no`) |
-| `CIS-SSH-04` | Section 5.2.7 | SSH | Limit SSH maximum authentication attempts (`MaxAuthTries <= 4`) |
-| `CIS-SSH-05` | Section 5.2.6 | SSH | Disable SSH X11 graphical forwarding (`X11Forwarding no`) |
-| `CIS-SSH-06` | Section 5.2.16 | SSH | Enforce SSH idle timeout interval (`ClientAliveInterval 300`) |
-| `CIS-PERM-01` | Section 6.1.3 | File Permissions | Enforce restrictive permissions on `/etc/shadow` (0640 or 0600) |
-| `CIS-PERM-02` | Section 6.1.5 | File Permissions | Enforce restrictive permissions on `/etc/gshadow` (0640 or 0600) |
-| `CIS-PERM-03` | Section 6.1.2 | File Permissions | Enforce restrictive permissions on `/etc/passwd` (0644, not world-writable) |
-| `CIS-PERM-04` | Section 6.1.4 | File Permissions | Enforce restrictive permissions on `/etc/group` (0644, not world-writable) |
-| `CIS-PERM-05` | Section 5.3.1 | File Permissions | Enforce restrictive permissions on `/etc/sudoers` (0440 or 0400) |
-| `CIS-PORT-01` | Section 2.1.18 | Open Ports | Ensure Telnet server is not listening (TCP 23) |
-| `CIS-PORT-02` | Section 2.1.8 | Open Ports | Ensure unencrypted FTP daemon is not listening (TCP 21) |
-| `CIS-PORT-03` | Section 2.1.15 | Open Ports | Ensure legacy `rsh`/`rlogin`/`rcp` daemons are not listening (512-514) |
-| `CIS-PORT-04` | Section 2.1.19 | Open Ports | Ensure TFTP daemon is not listening (UDP 69) |
-| `CIS-SUDO-00` | Section 5.3.1 | Sudoers | Verify `/etc/sudoers` configuration file presence and readability |
-| `CIS-SUDO-01` | Section 5.3.4 | Sudoers | Restrict passwordless sudo delegation (`NOPASSWD: ALL`) |
-| `CIS-SUDO-02` | Section 5.3.2 | Sudoers | Ensure sudo executes commands in a dedicated pseudo-terminal (`use_pty`) |
-| `CIS-SUDO-03` | Section 5.3.3 | Sudoers | Ensure sudo resets environment variables (`env_reset`) |
-| `CIS-SUDO-04` | Section 5.3.7 | Sudoers | Ensure sudo command execution logging is configured (`logfile`) |
+| Rule ID | Category | Description |
+| :--- | :--- | :--- |
+| `CIS-SSH-01` | SSH | Disable direct SSH root login (`PermitRootLogin no`) |
+| `CIS-SSH-02` | SSH | Require SSH public key authentication (`PasswordAuthentication no`) |
+| `CIS-SSH-03` | SSH | Disable empty SSH passwords (`PermitEmptyPasswords no`) |
+| `CIS-SSH-04` | SSH | Limit SSH maximum authentication attempts (`MaxAuthTries <= 4`) |
+| `CIS-SSH-05` | SSH | Disable SSH X11 graphical forwarding (`X11Forwarding no`) |
+| `CIS-SSH-06` | SSH | Enforce SSH idle timeout interval (`ClientAliveInterval 300`) |
+| `CIS-PERM-01` | File Permissions | Enforce restrictive permissions on `/etc/shadow` (0640 or 0600) |
+| `CIS-PERM-02` | File Permissions | Enforce restrictive permissions on `/etc/gshadow` (0640 or 0600) |
+| `CIS-PERM-03` | File Permissions | Enforce restrictive permissions on `/etc/passwd` (0644, not world-writable) |
+| `CIS-PERM-04` | File Permissions | Enforce restrictive permissions on `/etc/group` (0644, not world-writable) |
+| `CIS-PERM-05` | File Permissions | Enforce restrictive permissions on `/etc/sudoers` (0440 or 0400) |
+| `CIS-PORT-01` | Open Ports | Ensure Telnet server is not listening (TCP 23) |
+| `CIS-PORT-02` | Open Ports | Ensure unencrypted FTP daemon is not listening (TCP 21) |
+| `CIS-PORT-03` | Open Ports | Ensure legacy `rsh`/`rlogin`/`rcp` daemons are not listening (512-514) |
+| `CIS-PORT-04` | Open Ports | Ensure TFTP daemon is not listening (UDP 69) |
+| `CIS-SUDO-00` | Sudoers | Verify `/etc/sudoers` configuration file presence and readability |
+| `CIS-SUDO-01` | Sudoers | Restrict passwordless sudo delegation (`NOPASSWD: ALL`) |
+| `CIS-SUDO-02` | Sudoers | Ensure sudo executes commands in a dedicated pseudo-terminal (`use_pty`) |
+| `CIS-SUDO-03` | Sudoers | Ensure sudo resets environment variables (`env_reset`) |
+| `CIS-SUDO-04` | Sudoers | Ensure sudo command execution logging is configured (`logfile`) |
 
 ### Total Controls Audited: 19 vs. 16 Explained
 - **19 checks**: When auditing a target filesystem where `/etc/sudoers` is readable (e.g. running against fixture trees like `sample_configs/unhardened` or `sample_configs/hardened`, or when executing with root privileges on the live host): 6 SSH checks + 5 File permission checks + 4 Port checks + 4 Sudoers checks (`CIS-SUDO-01` through `CIS-SUDO-04`).

@@ -17,7 +17,7 @@ Each tool represents a distinct domain in defensive cybersecurity, systems progr
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | **`port-scanner`** | C++17, Winsock2 / POSIX Sockets, CMake | Network Security & Systems | Multithreaded TCP connect scanner, non-blocking sockets, banner grabber, worker thread pool, localhost guard | 6/6 C++ Tests | [`port-scanner/`](port-scanner/) |
 | **`log-analyzer`** | Python 3, Regex, Standard Library | Blue Team / SIEM & Threat Detection | Parses SSH `auth.log` and Nginx `access.log`, detects brute force attacks, directory scanners (Nikto/sqlmap), traversal/SQLi patterns; generates Markdown incident reports | 11/11 Pytest | [`log-analyzer/`](log-analyzer/) |
-| **`hardening-auditor`** | Python 3, Linux Systems Auditing | Systems Hardening & Compliance | Read-only CIS benchmark auditor: inspects SSH daemon config, critical file permissions (`/etc/shadow`, `/etc/sudoers`), listening TCP/UDP sockets, and sudo configuration. Produces posture score (0-100) and actionable remediation commands | 11/11 Pytest | [`hardening-auditor/`](hardening-auditor/) |
+| **`hardening-auditor`** | Python 3, Linux Systems Auditing | Systems Hardening & Compliance | Read-only Linux system hardening auditor based on common security recommendations: inspects SSH daemon config, critical file permissions (`/etc/shadow`, `/etc/sudoers`), listening TCP/UDP sockets, and sudo configuration. Produces posture score (0-100) and actionable remediation commands | 11/11 Pytest | [`hardening-auditor/`](hardening-auditor/) |
 | **`dependency-checker`** | Python 3, `urllib`, OSV.dev REST API | Software Supply Chain Security | Scans Python (`requirements.txt`) and Java Maven (`pom.xml`) manifests, queries Google's OSV.dev open vulnerability database in batch, reports CVEs/GHDAs with severity and fixed versions | 7/7 Pytest | [`dependency-checker/`](dependency-checker/) |
 | **`vuln-app-lab`** | Python 3, Flask, SQLite3, HTML/CSS | Application Security / OWASP Top 10 | Interactive localhost laboratory demonstrating SQL Injection, Cross-Site Scripting (XSS), Insecure Direct Object References (IDOR), and Server-Side Request Forgery (SSRF) side-by-side in vulnerable vs. cryptographically hardened implementations | 9/9 Pytest | [`vuln-app-lab/`](vuln-app-lab/) |
 | **`password-demo`** | Python 3, `bcrypt`, `argon2-cffi`, `hashlib` | Cryptography & Authentication | Educational benchmark comparing MD5 vs. bcrypt vs. Argon2id latency, resistance to offline GPU attacks, and salting defense against rainbow tables | 6/6 Pytest | [`password-demo/`](password-demo/) |
@@ -70,7 +70,7 @@ security-labs/
 │   ├── tests/
 │   │   └── test_analyzer.py     # 11 unit & integration tests
 │   └── README.md
-├── hardening-auditor/           # Read-Only CIS Linux Baseline Compliance Checker
+├── hardening-auditor/           # Read-Only Linux Hardening & Configuration Checker
 │   ├── hardening_auditor/
 │   │   ├── auditor.py           # Core orchestrator and 0-100 score calculator
 │   │   ├── checks/              # Rules for SSH, file perms, ports, sudoers
@@ -237,7 +237,7 @@ python log-analyzer/log_analyzer/cli.py \
 *Generates an actionable markdown report summarizing top offending IP addresses, targeted accounts, scanner user-agents, and matched signatures.*
 
 ### 3. `hardening-auditor` (Python)
-Non-destructive Linux system hardening configuration auditor aligned with **CIS Linux Benchmark** recommendations (Sections 2.1, 5.2, 5.3, and 6.1). Emits numerical compliance scores and exact shell remediation fixes.
+Non-destructive Linux system configuration auditor based on common security hardening recommendations. Inspects SSH configurations, file permissions, listening ports, and sudoers privileges to compute a posture score and generate exact remediation commands.
 
 ```bash
 # Run audit against host or target directory (commands available after pip install -e .)
@@ -386,7 +386,7 @@ timeline
 - [ ] **GeoIP Enrichment**: Integrated MaxMind GeoLite2 lookup for geolocation tracking of external attack sources.
 
 #### 3. `hardening-auditor`
-- [x] Read-only CIS baseline audits across SSH daemon configuration, critical file permissions, open listening sockets, and sudo privileges.
+- [x] Read-only security hardening audits across SSH daemon configuration, critical file permissions, open listening sockets, and sudo privileges.
 - [x] Hardening posture score calculation (0-100) and actionable remediation commands.
 - [x] Guaranteed zero-risk read-only safety invariant.
 - [x] **Automated Remediation Engine**: Non-destructive remediation plan generator with pre-flight backup targets and dry-run unified diff previews.
