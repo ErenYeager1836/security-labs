@@ -8,6 +8,13 @@
 
 ---
 
+## Security & Authorized-Use Policy
+
+> [!NOTE]
+> **Authorized Audit Notice**: `dependency-checker` is a defensive software supply chain audit tool. It inspects software manifests (`requirements.txt`, `pom.xml`) that you own or are authorized to evaluate, querying public vulnerability records from Google OSV.dev. It contains no exploit payloads or automated exploitation capabilities.
+
+---
+
 ## Overview
 
 Software supply chain security is a critical priority in modern application security. Over 80% of lines of code in modern enterprise software come from third-party open-source dependencies.

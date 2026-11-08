@@ -9,10 +9,13 @@
 
 ---
 
-## Educational Scope & Notice
+## Security & Authorized-Use Policy
 
 > [!NOTE]
-> **No Real Data Cracking**: This project is strictly educational and architectural. It benchmark timings and illustrates cryptographic principles using synthetic dummy passwords (e.g., `CorrectHorseBatteryStaple!`). It contains no password cracking engines or leaked real-world hashes.
+> **Defensive & Educational Demonstration Only**: This tool is strictly designed for cryptographic benchmarking and educational demonstrations.
+> - **Synthetic Passwords Only**: All benchmarking and salting routines use synthetic dummy passwords (e.g. `CorrectHorseBatteryStaple!`).
+> - **No Cracking Engines**: This tool contains no password cracking engines, rainbow table generators, or real-world leaked credential databases.
+> - **Authorized Use**: Use only in authorized educational environments and defensive security training.
 
 ---
 
@@ -95,6 +98,8 @@ python -m password_demo.cli --all --json
 ---
 
 ## Testing
+
+Run the test suite verifying hashing correctness, salt uniqueness, and benchmark calculations (6 tests):
 
 ```bash
 python -m pytest tests -v

@@ -4,6 +4,13 @@
 
 ---
 
+## Security & Authorized-Use Policy
+
+> [!NOTE]
+> **Authorized Testing Notice**: `log-analyzer` is a passive, defensive log parsing and threat detection tool. It operates in strictly read-only mode over system and web server logs (`auth.log`, `access.log`) that you own or are explicitly authorized to audit. It does not perform network probing, system modification, or active exploitation.
+
+---
+
 ## Features
 
 - **Dual-Source Log Parsing**:

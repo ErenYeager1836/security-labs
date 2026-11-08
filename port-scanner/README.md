@@ -6,8 +6,15 @@
 
 A high-performance, multithreaded TCP connect scanner and service banner grabber written in modern **C++17**. Designed for network engineers and defensive security auditors to assess local listening services, discover exposed ports, and verify service identification banners.
 
-> **LEGAL & ETHICAL USE DISCLAIMER**:  
-> This tool is developed strictly for authorized security auditing, defensive assessment, and educational research on systems you own or have explicit written permission to test. Unauthorized port scanning against third-party networks or systems may violate the **Computer Fraud and Abuse Act (CFAA)**, the **UK Computer Misuse Act (CMA)**, and international cybercrime statutes. The tool automatically alerts the operator when targeted against non-loopback addresses.
+## Security & Authorized-Use Policy
+
+> [!CAUTION]
+> **AUTHORIZED USE ONLY — OWNED HOSTS ONLY**  
+> `port-scanner` is strictly designed for auditing networks, hosts, and services that **you own** or have explicit, prior written authorization to evaluate.
+>
+> - **Default Target**: Always defaults to `127.0.0.1` (loopback).
+> - **Only Scan Hosts You Own**: Scanning third-party infrastructure or external networks without explicit consent is illegal under the Computer Fraud and Abuse Act (CFAA, 18 U.S.C. § 1030), the UK Computer Misuse Act, and international computer crime statutes.
+> - **Active Connect Footprint**: TCP connect scanning establishes full 3-way handshakes logged by remote firewalls and intrusion detection systems. Never point this tool at unauthorized hosts.
 
 ---
 
@@ -147,7 +154,7 @@ PORT        STATE     SERVICE               BANNER
 
 ## Running the Unit Tests
 
-The test suite runs an in-process local TCP listener on an ephemeral loopback port, validates loopback detection, verifies service dictionary mappings, tests positive connection and banner retrieval, and confirms negative connection handling:
+The test suite contains **6 automated unit tests** that run an in-process local TCP listener on an ephemeral loopback port, validate loopback detection, verify service dictionary mappings, test positive connection and banner retrieval, verify negative connection handling, and validate JSON/CSV structured exports:
 
 ```bash
 # Run tests executable

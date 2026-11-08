@@ -9,10 +9,10 @@
 
 ---
 
-## Read-Only Safety Guarantee
+## Security & Authorized-Use Policy
 
 > [!IMPORTANT]
-> **Read-Only Invariant**: `hardening-auditor` **NEVER** modifies configuration files, alters permissions, terminates network services, or runs state-altering commands on the audited system. It is strictly an assessment and reporting tool. All remediation commands are printed for administrative review.
+> **Authorized Assessment Notice & Read-Only Invariant**: `hardening-auditor` is designed strictly for evaluating the security posture of Linux hosts and containers that you own or are explicitly authorized to audit. It **never** alters configuration files, modifies filesystem permissions, terminates listening services, or executes state-changing actions. All remediation steps are emitted as suggestions for operator review.
 
 ---
 
