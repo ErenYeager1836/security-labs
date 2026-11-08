@@ -34,6 +34,15 @@
 
 ## Live Benchmark Results
 
+> [!WARNING]
+> **Measurement Environment vs. Real-World Attacker Speeds**:
+> The timings and hash rates below were measured using single-threaded CPython on this host machine (CPU). They reflect the defensive computational latency an authentication server incurs when validating a legitimate user's login.
+> 
+> **They do NOT represent attacker cracking throughput.** In offline password attacks, adversaries do not use Python or single CPU threads. Using dedicated GPU cracking rigs (e.g. Hashcat on multi-NVIDIA RTX 4090 setups) or specialized FPGA/ASIC clusters, attackers achieve throughput orders of magnitude higher:
+> - **MD5**: Attackers reach **billions to tens of billions of hashes per second** on consumer GPUs, allowing 8-character complex passwords to be cracked in minutes.
+> - **bcrypt**: GPU clusters achieve **hundreds of thousands of hashes per second** at cost 10–12.
+> - **Argon2id**: Mitigates GPU acceleration through configurable memory hardness (e.g. 64 MB per hash), but dedicated ASIC attackers with high memory bandwidth still achieve significant parallelism compared to a defensive single-thread CPU.
+
 Measured on a standard x86-64 CPU core:
 
 ```text
