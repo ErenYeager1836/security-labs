@@ -5,7 +5,7 @@
 [![C++ Standard](https://img.shields.io/badge/C%2B%2B-17-blue.svg)](port-scanner/)
 [![Python Version](https://img.shields.io/badge/Python-3.10%20%7C%203.11%20%7C%203.12%20%7C%203.15-blue.svg)](pyproject.toml)
 
-A production-grade, modular monorepo containing six cybersecurity and application security tools built for junior Application Security, Security Operations, and Systems Security Engineering portfolio demonstration.
+A modular monorepo containing six cybersecurity and application security tools built for junior Application Security, Security Operations, and Systems Security Engineering portfolio demonstration.
 
 Each tool represents a distinct domain in defensive cybersecurity, systems programming, and secure software development:
 
@@ -15,7 +15,7 @@ Each tool represents a distinct domain in defensive cybersecurity, systems progr
 
 | Tool | Language / Stack | Domain | Capabilities | Tests | Directory |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **`port-scanner`** | C++17, Winsock2 / POSIX Sockets, CMake | Network Security & Systems | Multithreaded TCP connect scanner, non-blocking sockets, banner grabber, worker thread pool, localhost guard | 5/5 C++ Tests | [`port-scanner/`](port-scanner/) |
+| **`port-scanner`** | C++17, Winsock2 / POSIX Sockets, CMake | Network Security & Systems | Multithreaded TCP connect scanner, non-blocking sockets, banner grabber, worker thread pool, localhost guard | 6/6 C++ Tests | [`port-scanner/`](port-scanner/) |
 | **`log-analyzer`** | Python 3, Regex, Standard Library | Blue Team / SIEM & Threat Detection | Parses SSH `auth.log` and Nginx `access.log`, detects brute force attacks, directory scanners (Nikto/sqlmap), traversal/SQLi patterns; generates Markdown incident reports | 11/11 Pytest | [`log-analyzer/`](log-analyzer/) |
 | **`hardening-auditor`** | Python 3, Linux Systems Auditing | Systems Hardening & Compliance | Read-only CIS benchmark auditor: inspects SSH daemon config, critical file permissions (`/etc/shadow`, `/etc/sudoers`), listening TCP/UDP sockets, and sudo configuration. Produces posture score (0-100) and actionable remediation commands | 11/11 Pytest | [`hardening-auditor/`](hardening-auditor/) |
 | **`dependency-checker`** | Python 3, `urllib`, OSV.dev REST API | Software Supply Chain Security | Scans Python (`requirements.txt`) and Java Maven (`pom.xml`) manifests, queries Google's OSV.dev open vulnerability database in batch, reports CVEs/GHDAs with severity and fixed versions | 7/7 Pytest | [`dependency-checker/`](dependency-checker/) |
@@ -56,7 +56,7 @@ security-labs/
 │   │   ├── thread_pool.cpp
 │   │   └── utils.cpp
 │   ├── tests/
-│   │   └── test_scanner.cpp     # C++ socket test harness (5 test cases)
+│   │   └── test_scanner.cpp     # C++ socket test harness (6 test cases)
 │   └── README.md
 ├── log-analyzer/                # Python Log Incident Analyzer & Markdown Reporter
 │   ├── log_analyzer/
@@ -64,9 +64,9 @@ security-labs/
 │   │   ├── models.py            # Dataclasses for entries and incidents
 │   │   ├── parser.py            # Regex parsers for auth.log and nginx access.log
 │   │   └── reporter.py          # Markdown incident report generator
-│   ├── data/                    # Authentic synthetic sample logs
-│   │   ├── sample_auth.log
-│   │   └── sample_nginx_access.log
+│   ├── sample_logs/             # Authentic synthetic sample logs
+│   │   ├── auth.log
+│   │   └── access.log
 │   ├── tests/
 │   │   └── test_analyzer.py     # 11 unit & integration tests
 │   └── README.md
@@ -90,7 +90,7 @@ security-labs/
 │   │   ├── osv.py               # OSV.dev batch REST API client
 │   │   ├── parsers/             # requirements.txt and pom.xml parsers
 │   │   └── reporter.py          # Terminal tables and Markdown reports
-│   ├── samples/                 # Sample manifests with known CVEs for verification
+│   ├── sample_files/            # Sample manifests with known CVEs for verification
 │   │   ├── requirements.txt
 │   │   └── pom.xml
 │   ├── tests/
@@ -144,16 +144,16 @@ security-labs/
 
 ```bash
 pip install --upgrade pip
-pip install -r vuln-app-lab/requirements.txt -r password-demo/requirements.txt pytest flake8
+pip install -r requirements-dev.txt
 ```
 
 ---
 
 ## Running the Test Suites
 
-The monorepo contains **49 automated tests** (5 C++ tests + 44 Python tests) covering functional correctness, security controls, and edge cases.
+The monorepo contains **55 automated tests** (6 C++ tests + 49 Python tests) covering functional correctness, security controls, and edge cases.
 
-### Run All 44 Python Tests Across the Monorepo
+### Run All 49 Python Tests Across the Monorepo
 
 From the repository root:
 ```bash
@@ -162,7 +162,7 @@ python -m pytest -v
 
 Output:
 ```text
-============================= 44 passed in 0.65s ==============================
+============================== 49 passed in 1.94s ==============================
 ```
 
 ### Run Python Code Style & Linting
@@ -198,25 +198,39 @@ ctest --test-dir build --output-on-failure
 Multithreaded TCP port scanner with cross-platform socket abstraction (Winsock2 / POSIX), custom worker thread pool, and HTTP/SSH banner grabber.
 
 ```bash
-# Scan localhost ports 20 through 90 with 50 threads and 500ms timeout
-./build/port_scanner -h 127.0.0.1 -p 20-90 -t 50 -T 500
+# Build and scan localhost ports 20 through 90 with 50 threads and 500ms timeout
+./port-scanner/build/port_scanner -h 127.0.0.1 -p 20-90 -n 50 -t 500
 ```
 *Sample Output:*
 ```text
-=== Starting TCP Port Scan on 127.0.0.1 (ports 20-90) using 50 threads ===
-[+] Port 22/tcp OPEN (SSH) -> Banner: SSH-2.0-OpenSSH_9.0
-[+] Port 80/tcp OPEN (HTTP) -> Banner: HTTP/1.1 200 OK
-=== Scan Complete in 0.04 seconds. 2 ports open. ===
+=========================================================
+       security-labs // port-scanner (C++17)             
+  Multithreaded TCP Connect Scanner & Banner Grabber     
+=========================================================
+
+[*] Target Host:     127.0.0.1
+[*] Port Range:      20 -> 90
+[*] Connect Timeout: 500 ms
+[*] Worker Threads:  50
+[*] Banner Grab:     Enabled
+
+[*] Starting port scan...
+[+] Progress: 71/71 ports (100%) 
+
+--- Scan Results ---
+No open TCP ports discovered in specified range.
+
+[+] Finished in 0.02s. 0 open port(s) found across 71 ports scanned.
 ```
 
 ### 2. `log-analyzer` (Python)
 Audits authentication logs and web server access logs to surface brute force attacks, reconnaissance scanners, and web payloads.
 
 ```bash
-python log-analyzer/log_analyzer/analyzer.py \
-  --auth log-analyzer/data/sample_auth.log \
-  --nginx log-analyzer/data/sample_nginx_access.log \
-  --output incident_report.md
+python log-analyzer/log_analyzer/cli.py \
+  --auth-log log-analyzer/sample_logs/auth.log \
+  --nginx-log log-analyzer/sample_logs/access.log \
+  -o incident_report.md
 ```
 *Generates an actionable markdown report summarizing top offending IP addresses, targeted accounts, scanner user-agents, and matched signatures.*
 
@@ -224,14 +238,21 @@ python log-analyzer/log_analyzer/analyzer.py \
 Non-destructive CIS-style auditor that inspects Linux system posture and emits a numerical security score alongside exact shell fixes.
 
 ```bash
-python hardening-auditor/hardening_auditor/auditor.py --report audit_results.md
+python hardening-auditor/hardening_auditor/cli.py -o audit_results.md
 ```
 *Sample Output:*
 ```text
-[FAIL] SSH: PermitRootLogin is 'yes' (Recommended: 'no')
-[FAIL] Permissions: /etc/shadow has mode 0644 (Recommended: 0640 or 0600)
-[PASS] Sudo: NOPASSWD directive absent from /etc/sudoers
-Hardening Compliance Score: 78/100 (NEEDS HARDENING)
+================================================================
+      security-labs // hardening-auditor (Python)       
+      CIS-Style Read-Only Linux Security Auditor        
+================================================================
+[*] Target Directory Root : /
+[*] Total Controls Audited: 16
+[+] Passed Controls       : 12
+[-] Failed Controls       : 3
+[~] Skipped Controls      : 1
+[*] Compliance Score      : 80.0%
+----------------------------------------------------------------
 ```
 
 ### 4. `dependency-checker` (Python)
@@ -239,9 +260,7 @@ Software supply chain security scanner evaluating Python `requirements.txt` and 
 
 ```bash
 # Scan vulnerable sample Python manifest
-python dependency-checker/dependency_checker/cli.py \
-  --manifest dependency-checker/samples/requirements.txt \
-  --ecosystem PyPI
+python dependency-checker/dependency_checker/cli.py dependency-checker/sample_files/requirements.txt
 ```
 *Identifies known CVEs, CVSS ratings, advisory links, and safe upgrade targets. Returns exit code 1 on vulnerabilities to gate CI/CD pipelines.*
 
@@ -261,19 +280,20 @@ python vuln-app-lab/app.py
 An educational cryptographic demonstration illustrating why legacy hashes like MD5 are vulnerable to offline attacks, how bcrypt and Argon2id provide tuneable work factors, and how cryptographic salts defeat rainbow tables.
 
 ```bash
-python password-demo/password_demo/benchmark.py --iterations 5
+python password-demo/password_demo/benchmark.py --iterations 3
 ```
 *Sample Benchmark:*
 ```text
-======================================================================
-ALGORITHM LATENCY & THROUGHPUT BENCHMARK
-======================================================================
-Algorithm       Avg Latency (ms)     Hashes/Sec           Relative Cost
-----------------------------------------------------------------------
-MD5             0.002 ms             492,810.2 h/s        1x (INSECURE)
-bcrypt (c=12)   248.150 ms           4.0 h/s              124,075x
-Argon2id        65.420 ms            15.3 h/s             32,710x
-======================================================================
+================================================================================
+      PASSWORD HASHING BENCHMARK: MD5 vs bcrypt vs Argon2id      
+================================================================================
+Algorithm                                    Mean Latency     Hashes/Sec     Slowdown
+--------------------------------------------------------------------------------
+MD5 (broken general-purpose digest)          0.002 ms         435597.0/s     1.0x baseline
+bcrypt (cost=10, 2^10 = 1,024 iterations)    172.253 ms       5.8/s          86126.5x slower
+bcrypt (cost=12, 2^12 = 4,096 iterations)    677.866 ms       1.5/s          338933.0x slower
+Argon2id (t=3, m=64MB, p=4 - RFC 9106)       130.307 ms       7.7/s          65153.5x slower
+--------------------------------------------------------------------------------
 ```
 
 ---
@@ -287,21 +307,30 @@ Every commit and pull request runs automated validation in GitHub Actions ([`.gi
 
 ---
 
-## Interview Highlights & Engineering Decisions
+## Limitations
 
-1. **Why C++17 for the Port Scanner?**
-   - Demonstrates understanding of low-level networking, raw file descriptors, Winsock initialization (`WSAStartup`), POSIX compatibility (`sys/socket.h`), and RAII socket wrappers (`SocketGuard`) preventing resource leaks.
-   - Implements a custom thread pool with condition variables to avoid operating system thread exhaustion during wide port sweeps.
+While each tool is engineered for defensive security, auditing, and systems analysis, several deliberate design constraints and technical limitations apply:
 
-2. **Supply Chain Security & OSV Batching**:
-   - The `dependency-checker` uses OSV's `querybatch` API endpoint rather than querying each package in sequence, reducing network round-trips from $O(N)$ to $O(1)$.
-
-3. **Read-Only Invariant in Hardening Auditor**:
-   - Systems auditing tools in production environments must never introduce configuration corruption or race conditions. All file descriptors are opened in read-only mode (`r`), and non-destructive inspection methods (`ss`/`netstat` reading, `/proc` inspection) ensure zero impact on target systems.
-
-4. **Cryptographic Defense Architecture**:
-   - `vuln-app-lab` demonstrates real-world defensive principles: defense-in-depth, least privilege, parameterized queries, and strict input validation before execution.
-   - `password-demo` articulates the distinction between hash collision resistance and slow, memory-hard key derivation functions (KDFs).
+- **`port-scanner`**:
+  - Uses standard TCP connect scanning (`connect()`), completing the full 3-way handshake. Does not implement raw SYN stealth scanning or UDP ICMP probing, which require elevated privileges (`CAP_NET_RAW` / root).
+  - Hardcoded safety guard restricts active scanning targets to `127.0.0.1` and loopback interfaces.
+  - Banner grabber uses plaintext HTTP/SSH probes and does not negotiate full TLS/SSL handshakes.
+- **`log-analyzer`**:
+  - Performs batch analysis on static log files; does not operate as a background daemon or stream live systemd `journald` / syslog events via inotify.
+  - Threat detection relies on deterministic regex heuristics, which can be bypassed by polymorphic encoding or novel attack techniques.
+- **`hardening-auditor`**:
+  - Tailored to standard Linux server distributions; does not evaluate Windows or macOS security baselines.
+  - Strictly read-only; it reports discrepancies and suggests shell remediation commands but does not mutate system configuration files.
+  - Inspects standard paths (e.g., `/etc/ssh/sshd_config`, `/etc/shadow`); unprivileged executions skip files with restricted read permissions.
+- **`dependency-checker`**:
+  - Parses direct manifest entries (`requirements.txt`, `pom.xml`); does not resolve complete transitive dependency trees from multi-tier lockfiles (`poetry.lock`, `Pipfile.lock`, `Cargo.lock`).
+  - Requires outbound HTTPS network connectivity to Google's OSV.dev REST API for vulnerability resolution.
+- **`vuln-app-lab`**:
+  - Intended solely as a localhost educational sandbox running on Flask's single-process development server with an ephemeral SQLite database.
+  - Intentionally vulnerable by design; must never be deployed on public, shared, or production infrastructure.
+- **`password-demo`**:
+  - Measures single-threaded CPU hashing latency on the local host; does not benchmark distributed or hardware-accelerated (GPU / ASIC / FPGA) cracking clusters.
+  - Benchmarks MD5, bcrypt, and Argon2id; does not evaluate PBKDF2 or scrypt.
 
 ---
 
@@ -315,7 +344,7 @@ timeline
     Phase 1 : Multithreaded TCP Port Scanner : Nginx & SSH Log Incident Analyzer : CIS Linux Hardening Auditor : OSV.dev Software Supply Chain Checker : OWASP Top 10 Vulnerable Web Lab : KDF Password Benchmark
     Phase 2 : Raw SYN Stealth Scanner : Live Inotify Stream Log Monitor : UFW & Sysctl Kernel Hardening Rules : SBOM Generation (CycloneDX & SPDX) : XXE & JWT Insecure Deserialization Labs : WebAuthn / Passkeys Demo
     Phase 3 : TLS SAN Certificate Inspector : MITRE ATT&CK Heuristic Tagging : OpenSCAP DataStream XML Compliance : Transitive Dependency Tree Graphing : Automated CTF Scoring Engine : Hardware Hash Acceleration Benchmarks
-    Phase 4 : OS Fingerprinting via TCP Options : Automated Slack / SIEM Webhook Dispatcher : Automated Remediation & Diff Engine : Automated GitHub Security PR Bot : Sandboxed Isolated Container Labs : Enterprise PAM Integration
+    Phase 4 : OS Fingerprinting via TCP Options : Automated Slack / SIEM Webhook Dispatcher : Automated Remediation & Diff Engine : Automated GitHub Security PR Bot : Sandboxed Isolated Container Labs : PAM / Directory Service Integration
 ```
 
 ### Detailed Tool Roadmap
