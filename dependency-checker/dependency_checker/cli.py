@@ -5,10 +5,15 @@ CLI interface for dependency-checker.
 from __future__ import annotations
 
 import argparse
+from pathlib import Path
 import sys
 import time
-from pathlib import Path
 from typing import List, Optional
+
+# Ensure parent directory is in sys.path when invoked directly as a script
+_pkg_root = Path(__file__).resolve().parent.parent
+if str(_pkg_root) not in sys.path:
+    sys.path.insert(0, str(_pkg_root))
 
 from dependency_checker import __version__
 from dependency_checker.models import AuditSummary, PackageDependency, Severity

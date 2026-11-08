@@ -28,9 +28,12 @@ def read_sudoers_lines(root_dir: Path) -> List[Tuple[str, str]]:
 
     sudoers_d = root_dir / "etc" / "sudoers.d"
     if sudoers_d.is_dir():
-        for dropin in sorted(sudoers_d.iterdir()):
-            if dropin.is_file() and not dropin.name.startswith((".", "~")) and not dropin.name.endswith("~"):
-                files_to_read.append(dropin)
+        try:
+            for dropin in sorted(sudoers_d.iterdir()):
+                if dropin.is_file() and not dropin.name.startswith((".", "~")) and not dropin.name.endswith("~"):
+                    files_to_read.append(dropin)
+        except OSError:
+            pass
 
     for p in files_to_read:
         try:

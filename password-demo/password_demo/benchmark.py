@@ -4,9 +4,16 @@ Benchmarking engine measuring hashing speeds, work factors, and cracking resista
 
 from __future__ import annotations
 
+from pathlib import Path
 import statistics
+import sys
 import time
 from typing import Any, Dict, List
+
+# Ensure package directory is on sys.path when executed directly
+_pkg_root = Path(__file__).resolve().parent.parent
+if str(_pkg_root) not in sys.path:
+    sys.path.insert(0, str(_pkg_root))
 
 from password_demo.hasher import PasswordHasher
 
@@ -86,3 +93,14 @@ def run_full_benchmark(iterations: int = 3) -> Dict[str, Any]:
         "timestamp": time.time(),
         "benchmarks": benchmarks,
     }
+
+
+if __name__ == "__main__":
+    import argparse
+    from password_demo.cli import display_benchmark
+
+    parser = argparse.ArgumentParser(description="Password hashing benchmark")
+    parser.add_argument("-i", "--iterations", type=int, default=3, help="Iterations per algorithm")
+    args = parser.parse_args()
+    data = run_full_benchmark(iterations=args.iterations)
+    display_benchmark(data)

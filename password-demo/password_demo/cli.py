@@ -6,8 +6,14 @@ from __future__ import annotations
 
 import argparse
 import json
+from pathlib import Path
 import sys
 from typing import List, Optional
+
+# Ensure package directory is on sys.path when executed directly
+_pkg_root = Path(__file__).resolve().parent.parent
+if str(_pkg_root) not in sys.path:
+    sys.path.insert(0, str(_pkg_root))
 
 from password_demo import __version__
 from password_demo.benchmark import run_full_benchmark
