@@ -1,7 +1,7 @@
 # password-demo
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](../LICENSE)
-[![Python: 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/)
+[![Python: 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/)
 [![Argon2id](https://img.shields.io/badge/KDF-Argon2id%20(RFC%209106)-orange.svg)](https://www.rfc-editor.org/rfc/rfc9106)
 [![bcrypt](https://img.shields.io/badge/KDF-bcrypt%20(Cost%2012)-blue.svg)](https://en.wikipedia.org/wiki/Bcrypt)
 

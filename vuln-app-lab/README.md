@@ -1,7 +1,7 @@
 # vuln-app-lab
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](../LICENSE)
-[![Python: 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/)
+[![Python: 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/)
 [![Flask: 3.x](https://img.shields.io/badge/Framework-Flask-black.svg)](https://flask.palletsprojects.com/)
 [![Localhost Only](https://img.shields.io/badge/environment-localhost%20only-red.svg)](#safety--authorized-use-notice)
 

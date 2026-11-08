@@ -7,7 +7,7 @@ name = "vuln-app-lab"
 version = "0.1.0"
 description = "Educational vulnerability lab demonstrating SQLi, XSS, IDOR, and SSRF in vulnerable vs fixed versions"
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 license = { text = "MIT" }
 authors = [
     { name = "Nithishvelan M", email = "erenyeager1836@users.noreply.github.com" }

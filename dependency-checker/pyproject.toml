@@ -7,7 +7,7 @@ name = "dependency-checker"
 version = "0.1.0"
 description = "Software supply chain vulnerability checker for Python (requirements.txt) and Java (pom.xml) using OSV.dev API"
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 license = { text = "MIT" }
 authors = [
     { name = "Nithishvelan M", email = "erenyeager1836@users.noreply.github.com" }
