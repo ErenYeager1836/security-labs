@@ -7,12 +7,6 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 import sys
-
-# Ensure parent directory is in sys.path when invoked directly as a script
-_pkg_root = Path(__file__).resolve().parent.parent
-if str(_pkg_root) not in sys.path:
-    sys.path.insert(0, str(_pkg_root))
-
 from typing import List
 
 from log_analyzer.models import AnalysisSummary, NginxEvent, SSHEvent, SecurityAlert

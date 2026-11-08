@@ -10,11 +10,6 @@ import sys
 import time
 from typing import List, Optional
 
-# Ensure parent directory is in sys.path when invoked directly as a script
-_pkg_root = Path(__file__).resolve().parent.parent
-if str(_pkg_root) not in sys.path:
-    sys.path.insert(0, str(_pkg_root))
-
 from dependency_checker import __version__
 from dependency_checker.models import AuditSummary, PackageDependency, Severity
 from dependency_checker.osv import OSVClient

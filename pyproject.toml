@@ -1,3 +1,44 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "security-labs"
+version = "0.1.0"
+description = "Hands-on security engineering tools and vulnerability sandboxes"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [
+    { name = "Nithishvelan M", email = "erenyeager1836@users.noreply.github.com" }
+]
+dependencies = [
+    "flask>=3.0.0",
+    "bcrypt>=4.0.0",
+    "argon2-cffi>=23.1.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "flake8>=6.0.0",
+]
+
+[project.scripts]
+log-analyzer = "log_analyzer.cli:main"
+hardening-auditor = "hardening_auditor.cli:main"
+dependency-checker = "dependency_checker.cli:main"
+password-demo = "password_demo.cli:main"
+
+[tool.setuptools.package-dir]
+log_analyzer = "log-analyzer/log_analyzer"
+hardening_auditor = "hardening-auditor/hardening_auditor"
+dependency_checker = "dependency-checker/dependency_checker"
+password_demo = "password-demo/password_demo"
+
+[tool.setuptools.packages.find]
+where = ["log-analyzer", "hardening-auditor", "dependency-checker", "password-demo"]
+
 [tool.pytest.ini_options]
 addopts = "--import-mode=importlib"
 pythonpath = [

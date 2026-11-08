@@ -10,11 +10,6 @@ import sys
 import time
 from typing import Any, Dict, List
 
-# Ensure package directory is on sys.path when executed directly
-_pkg_root = Path(__file__).resolve().parent.parent
-if str(_pkg_root) not in sys.path:
-    sys.path.insert(0, str(_pkg_root))
-
 from password_demo.hasher import PasswordHasher
 
 

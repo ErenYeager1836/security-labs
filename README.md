@@ -140,20 +140,22 @@ security-labs/
   .venv\Scripts\Activate.ps1
   ```
 
-### Install Python Dependencies
+### Install Python Dependencies & Package Tools
 
 ```bash
 pip install --upgrade pip
 pip install -r requirements-dev.txt
+pip install -e .
 ```
+*(Running `pip install -e .` installs all Python tools and creates CLI commands `log-analyzer`, `hardening-auditor`, `dependency-checker`, and `password-demo` in your virtualenv).*
 
 ---
 
 ## Running the Test Suites
 
-The monorepo contains **55 automated tests** (6 C++ tests + 49 Python tests) covering functional correctness, security controls, and edge cases.
+The monorepo contains **56 automated tests** (6 C++ tests + 50 Python tests) covering functional correctness, security controls, and edge cases.
 
-### Run All 49 Python Tests Across the Monorepo
+### Run All 50 Python Tests Across the Monorepo
 
 From the repository root:
 ```bash
@@ -162,7 +164,7 @@ python -m pytest -v
 
 Output:
 ```text
-============================== 49 passed in 1.94s ==============================
+============================== 50 passed in 0.62s ==============================
 ```
 
 ### Run Python Code Style & Linting
@@ -235,12 +237,15 @@ python log-analyzer/log_analyzer/cli.py \
 *Generates an actionable markdown report summarizing top offending IP addresses, targeted accounts, scanner user-agents, and matched signatures.*
 
 ### 3. `hardening-auditor` (Python)
-Non-destructive CIS-style auditor that inspects Linux system posture and emits a numerical security score alongside exact shell fixes.
+Non-destructive Linux system hardening configuration auditor aligned with **CIS Linux Benchmark** recommendations (Sections 2.1, 5.2, 5.3, and 6.1). Emits numerical compliance scores and exact shell remediation fixes.
 
 ```bash
-python hardening-auditor/hardening_auditor/cli.py -o audit_results.md
+# Run audit against host or target directory (commands available after pip install -e .)
+hardening-auditor -o audit_results.md
+# Or via Python module directly:
+python -m hardening_auditor.cli -o audit_results.md
 ```
-*Sample Output:*
+*Sample Output (Unprivileged Live System Audit on `/`):*
 ```text
 ================================================================
       security-labs // hardening-auditor (Python)       
@@ -250,17 +255,21 @@ python hardening-auditor/hardening_auditor/cli.py -o audit_results.md
 [*] Total Controls Audited: 16
 [+] Passed Controls       : 12
 [-] Failed Controls       : 3
-[~] Skipped Controls      : 1
-[*] Compliance Score      : 80.0%
+[?] Could Not Check       : 1
+[*] Compliance Score      : 75.0%
 ----------------------------------------------------------------
 ```
+> [!NOTE]
+> **Total Controls Audited (19 vs. 16 Explained)**:
+> - **19 checks**: When auditing a target filesystem where `/etc/sudoers` is readable (e.g., `sample_configs/unhardened` or when running with root privileges on `/`): 6 SSH checks + 5 File permission checks + 4 Port checks + 4 Sudoers checks (`CIS-SUDO-01` through `04`).
+> - **16 checks**: When running without root privileges on live `/`: `/etc/sudoers` has mode 0440 (readable only by root). The auditor cannot read the file, so it reports a distinct `could not check` status for `CIS-SUDO-00` and does not run the 4 privileged sub-checks (6 + 5 + 4 + 1 = 16 controls). A status of `could not check` does **not** count as a pass in the compliance score.
 
 ### 4. `dependency-checker` (Python)
 Software supply chain security scanner evaluating Python `requirements.txt` and Java `pom.xml` against Google's OSV.dev open vulnerability database.
 
 ```bash
 # Scan vulnerable sample Python manifest
-python dependency-checker/dependency_checker/cli.py dependency-checker/sample_files/requirements.txt
+dependency-checker dependency-checker/sample_files/requirements.txt
 ```
 *Identifies known CVEs, CVSS ratings, advisory links, and safe upgrade targets. Returns exit code 1 on vulnerabilities to gate CI/CD pipelines.*
 
@@ -280,8 +289,15 @@ python vuln-app-lab/app.py
 An educational cryptographic demonstration illustrating why legacy hashes like MD5 are vulnerable to offline attacks, how bcrypt and Argon2id provide tuneable work factors, and how cryptographic salts defeat rainbow tables.
 
 ```bash
-python password-demo/password_demo/benchmark.py --iterations 3
+password-demo --benchmark -i 3
+# Or via Python module directly:
+python -m password_demo.cli --benchmark -i 3
 ```
+
+> [!WARNING]
+> **Measurement Environment vs. Real-World Attacker Speeds**:
+> Timings and hash rates below are measured in single-threaded Python on this host CPU to demonstrate defensive authentication latency. They do **not** represent attacker cracking speeds. On dedicated GPU rigs (e.g. Hashcat on multi-RTX 4090 clusters), attackers achieve **billions of MD5 hashes per second** and orders of magnitude higher throughput against poorly salted or un-hardened hashes.
+
 *Sample Benchmark:*
 ```text
 ================================================================================
